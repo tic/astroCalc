@@ -1,61 +1,34 @@
+// React imports
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 
+// The base structure for all calculators
 import CalculatorShell from './screens/CalculatorShell.js';
+
+// Other screens which don't follow the calculator shell structure.
 import Settings from './screens/Settings.js';
 
-//
-import InteractionLibrary from './components/InteractionLibrary.js';
+// Import the manifest, which contains information on how to build each Calculator.
+import Manifest from './Manifest.js';
 
-
-// Import and register the necessary calculators
-import TwoValueSum from './components/functions/TwoValueSum.js';
-
-
-let Calculators = [
-    {
-        name: "Two Value Sum",
-        description: "Provide two number values and the calculator outputs their sum as a single numerical value.",
-        function: TwoValueSum,
-        inputs: [
-            {type: InteractionLibrary.NumericalValue, name: "Value A"},
-            {type: InteractionLibrary.NumericalValue, name: "Value B"},
-            {type: InteractionLibrary.NumericalValue, name: "Value C"},
-        ],
-        outputs: [
-            {type: InteractionLibrary.NumericalValue, name: "Sum of A and B"},
-            {type: InteractionLibrary.NumericalValue, name: "A minus B"},
-            {type: InteractionLibrary.NumericalValue, name: "B minus A"},
-            {type: InteractionLibrary.NumericalValue, name: "C times A"},
-        ]
-    }
-]
-
-//
-
+// Create the draw navigation system
 const Drawer = createDrawerNavigator();
 
-const Paramify = details => ({
-                                description: details.description,
-                                function: details.function,
-                                inputs: details.inputs,
-                                outputs: details.outputs,
-                            });
-
+// Convert a manifest entry into a Drawer screen
 const DrawerScreen = details => (<Drawer.Screen name={details.name}
                                                 key={details.name}
                                                 component={CalculatorShell}
-                                                initialParams={Paramify(details)}/>);
+                                                initialParams={details}/>);
 
-
+// Place the navigation stack and populate the screen
 export default function App() {
     return (
         <View style={styles.container}>
             <NavigationContainer>
                 <Drawer.Navigator initialRouteName="Calculator">
-                    {Calculators.map(calc => DrawerScreen(calc))}
+                    {Manifest.map(calc => DrawerScreen(calc))}
                     <Drawer.Screen name="Settings" component={Settings}/>
                 </Drawer.Navigator>
             </NavigationContainer>

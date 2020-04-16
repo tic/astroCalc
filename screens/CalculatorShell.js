@@ -3,13 +3,17 @@ import Constants from 'expo-constants';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import InteractionLibrary from '../components/InteractionLibrary.js';
 
+// ID generator
+const ID = (mode, index) => `${mode}_${index}`;
+
 // Create the field(s) for inputting the values to the function
 const InputConstructor = (inputs, inputHooks) => {
     return inputs.map((input, index) => {
         switch(input.type) {
             case InteractionLibrary.NumericalValue:
                 return (
-                        <View style={styles.inputRow}>
+                        <View   key={ID("input", index)}
+                                style={styles.inputRow}>
                             <Text style={styles.displayLabel}>{input.name}:</Text>
                             <TextInput  style={styles.numericalInput}
                                         value={inputHooks[index][0]}
@@ -22,7 +26,7 @@ const InputConstructor = (inputs, inputHooks) => {
 
 // Create the field(s) for displaying outputs from the function
 const OutputConstructor = (outputs, outputHooks) => {
-    return outputs.map((output, index) => (<Text style={styles.displayLabel}>{output.name}: {outputHooks[index][0]}</Text>));
+    return outputs.map((output, index) => (<Text key={ID("output", index)} style={styles.displayLabel}>{output.name}: {outputHooks[index][0]}</Text>));
 };
 
 const HooksToValues = hooks => hooks.map(hook => hook[0]);
