@@ -1,6 +1,7 @@
 import React from 'react';
 import Constants from 'expo-constants';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
 import InteractionLibrary from '../components/InteractionLibrary.js';
 
 // ID generator
@@ -10,16 +11,30 @@ const ID = (mode, index) => `${mode}_${index}`;
 const InputConstructor = (inputs, inputHooks) => {
     return inputs.map((input, index) => {
         switch(input.type) {
-            case InteractionLibrary.NumericalValue:
+            case InteractionLibrary.TextField:
                 return (
                         <View   key={ID("input", index)}
                                 style={styles.inputRow}>
                             <Text style={styles.displayLabel}>{input.name}:</Text>
-                            <TextInput  style={styles.numericalInput}
+                            <TextInput  style={styles.textEntry}
                                         value={inputHooks[index][0]}
                                         onChangeText={text => inputHooks[index][1](text)}/>
                         </View>
                     );
+
+            case InteractionLibrary.MultipleSelect:
+                return (
+                    <View   key={ID("input", index)}
+                            style={styles.inputRow}>
+                        <Text style={styles.displayLabel}>{input.name}:</Text>
+                        <View style={styles.multipleSelect}>
+                            <RNPickerSelect selectedValue={inputHooks[index][0]}
+                                            onValueChange={value => inputHooks[index][1](value)}
+                                            items={input.options}
+                                            textInputProps={{style: styles.multipleSelectText}}/>
+                        </View>
+                    </View>
+                );
         }
     });
 };
@@ -32,8 +47,11 @@ const OutputConstructor = (outputs, outputHooks) => {
 const HooksToValues = hooks => hooks.map(hook => hook[0]);
 const DescriptionsToHooks = desc => desc.map(item => {
     switch(item.type) {
-        case InteractionLibrary.NumericalValue:
-            return React.useState("0");
+        case InteractionLibrary.TextField:
+            return React.useState("");
+
+        case InteractionLibrary.MultipleSelect:
+            return React.useState(item.options[0].value);
     }
 });
 
@@ -58,16 +76,18 @@ export default function CalculatorShell(props) {
             <Text style={styles.title}>{props.route.name}</Text>
             <Text style={styles.subtitle}>{props.route.params.description}</Text>
             <View style={styles.separator}/>
-            <View style={styles.inputContainer}>
-                {InputFields}
-            </View>
-            <TouchableOpacity   style={styles.submit}
-                                onPress={() => RunCalculation(props.route.params.function, inputHooks, outputHooks)}>
-                <Text style={styles.submittext}>Run Calculation</Text>
-            </TouchableOpacity>
-            <View style={styles.outputContainer}>
-                {OutputFields}
-            </View>
+            <ScrollView>
+                <View style={styles.inputContainer}>
+                    {InputFields}
+                </View>
+                <TouchableOpacity   style={styles.submit}
+                                    onPress={() => RunCalculation(props.route.params.function, inputHooks, outputHooks)}>
+                    <Text style={styles.submittext}>Run Calculation</Text>
+                </TouchableOpacity>
+                <View style={styles.outputContainer}>
+                    {OutputFields}
+                </View>
+            </ScrollView>
         </View>
     );
 }
@@ -118,9 +138,9 @@ const styles = StyleSheet.create({
         textAlign: "center",
         padding: 10
     },
-    numericalInput: {
+    textEntry: {
         color: "white",
-        fontSize: 16,
+        fontSize: 18,
         margin: 5,
         backgroundColor: "#444",
         flex: 1,
@@ -140,11 +160,24 @@ const styles = StyleSheet.create({
     },
     displayLabel: {
         color: "white",
-        fontSize: 16
+        fontSize: 18
     },
     inputRow: {
         flexDirection: "row",
         justifyContent: "flex-start",
         alignItems: "center"
+    },
+    multipleSelect: {
+        flex: 1,
+        backgroundColor: "#444",
+        height: 50,
+        margin: 5,
+    },
+    multipleSelectText: {
+        fontSize: 18,
+        color: "#ccc",
+        height: 50,
+        paddingLeft: 5
     }
+
 });

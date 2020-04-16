@@ -1,5 +1,6 @@
 const InteractionLibrary = {
-    NumericalValue: 0,
+    TextField: 0,
+    MultipleSelect: 1,
 
 }
 
