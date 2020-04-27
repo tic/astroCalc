@@ -10,7 +10,7 @@ const Manifest = [
         description: "Calculates the position of the Sun in ecliptic coordinates.",
         function: SolarPosition,
         inputs: [
-            {name: "Julian Date", type: InteractionLibrary.TextField}
+            {name: "Julian Date", type: InteractionLibrary.NumericalEntry}
         ],
         outputs: [
             {name: "Ecliptic Lattitude", type: InteractionLibrary.TextField},

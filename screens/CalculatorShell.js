@@ -35,6 +35,18 @@ const InputConstructor = (inputs, inputHooks) => {
                         </View>
                     </View>
                 );
+
+            case InteractionLibrary.NumericalEntry:
+                return (
+                    <View   key={ID("input", index)}
+                            style={styles.inputRow}>
+                        <Text style={styles.displayLabel}>{input.name}:</Text>
+                        <TextInput  style={styles.textEntry}
+                                    value={`${inputHooks[index][0]}`}
+                                    keyboardType="numeric"
+                                    onChangeText={text => inputHooks[index][1](text)}/>
+                    </View>
+                );
         }
     });
 };
@@ -47,12 +59,16 @@ const OutputConstructor = (outputs, outputHooks) => {
 const HooksToValues = hooks => hooks.map(hook => hook[0]);
 const DescriptionsToHooks = desc => desc.map(item => {
     switch(item.type) {
-        case InteractionLibrary.TextField:
-            return React.useState("");
-
         case InteractionLibrary.MultipleSelect:
             return React.useState(item.options[0].value);
+
+        case InteractionLibrary.NumericalEntry:
+            return React.useState(0);
+
     }
+
+    // Hook states default to the empty string.
+    return React.useState("");
 });
 
 const RunCalculation = (func, inputHooks, outputHooks) => {
